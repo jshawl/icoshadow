@@ -20,7 +20,7 @@ func main(){
   if err != nil {
     panic(err)
   }
-  defer css.Close()
+
   files, _ := ioutil.ReadDir("./icons")
   if _, err = html.WriteString("<link rel='stylesheet' type='text/css' href='icoshadow.css'>"); err != nil {
     panic(err)
@@ -33,6 +33,8 @@ func main(){
       panic(err)
     }
   }
+  css.Close()
+  html.Close()
 }
 
 func processFile(fname string) string{
@@ -41,7 +43,6 @@ func processFile(fname string) string{
   if err != nil {
     panic("Failed to open image")
   }
-  defer file.Close()
   config, _, err := image.DecodeConfig(file)
   if err != nil {
     panic(err)
@@ -57,6 +58,7 @@ func processFile(fname string) string{
        shadows = append(shadows, rgbToBoxString(x,y,int(r/257), int(g/257), int(b/257), int(a/257)))
      }
   }
+  file.Close()
   return makeCss(shadows, fname, height, width)
 }
 
@@ -66,7 +68,9 @@ func rgbToBoxString(x int, y int, r int, g int, b int, a int) string {
 
 func klass(path string) string {
   out := strings.TrimSuffix(path, filepath.Ext(path))
-  return strings.TrimPrefix(out, "icons/")
+  out = strings.TrimPrefix(out, "icons/")
+  out = strings.Replace(out, ".","-",-1)
+  return out
 }
 
 func makeCss(shadows []string, fname string, height int, width int) string {
