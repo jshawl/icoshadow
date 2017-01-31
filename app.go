@@ -29,14 +29,18 @@ func main(){
     if _, err = css.WriteString( processFile("icons/" + fmt.Sprintf("%v",icon.Name()))); err != nil {
       panic(err)
     }
-    if _, err = html.WriteString("<div class='"+klass(fmt.Sprintf("%v",icon.Name()))+"'></div>"); err != nil {
+    if _, err = html.WriteString(makeHTML(klass(fmt.Sprintf("%v",icon.Name())))); err != nil {
       panic(err)
     }
   }
   css.Close()
   html.Close()
 }
-
+func makeHTML(classname string) string {
+  out := ""
+  out = out + "<pre>&lt;i class='"+classname+"'>&lt;/i></pre>\n<div class='"+classname+"'></div>\n"
+  return out
+}
 func processFile(fname string) string{
   fmt.Println("./" + fname)
   file, err := os.Open("./" + fname)
@@ -74,7 +78,6 @@ func klass(path string) string {
 }
 
 func makeCss(shadows []string, fname string, height int, width int) string {
-
   out := "."+ klass(fname) +"{\n"
     out = out + "  height: " + fmt.Sprintf("%v",height) + "px;\n"
     out = out + "  width: " + fmt.Sprintf("%v",width) + "px;\n"
